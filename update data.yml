@@ -1,0 +1,26 @@
+name: DSE Data Engine
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install pandas requests beautifulsoup4
+      - name: Run ML Analysis
+        run: python engine.py
+      - name: Deploy Data
+        run: |
+          git config --global user.name 'DSE-Bot'
+          git config --global user.email 'bot@github.com'
+          git add data.json
+          git commit -m "Auto-update: Market Analysis" || exit 0
+          git push
